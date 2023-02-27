@@ -5,8 +5,8 @@ Shader "Custom/RimLightShader"
     {
         _MainTex ("Texture", 2D) = "white" {}
         // リムライト
-        _LimColor ("Lim Color", Color) = (1, 1, 1, 1)
-        _LimPower ("Lim Power", Range(0.0, 5.0)) = 2.0
+        _RimColor ("Rim Color", Color) = (1, 1, 1, 1)
+        _RimPower ("Rim Power", Range(0.0, 5.0)) = 2.0
     }
     SubShader
     {
@@ -39,8 +39,8 @@ Shader "Custom/RimLightShader"
             sampler2D _MainTex;
             float4 _MainTex_ST;
 
-            fixed4 _LimColor;
-            float _LimPower;
+            fixed4 _RimColor;
+            float _RimPower;
 
             v2f vert (appdata v)
             {
@@ -58,14 +58,14 @@ Shader "Custom/RimLightShader"
                 const float3 n = normalize(i.normal);
                 const float3 v = normalize(_WorldSpaceCameraPos - i.vertexWorld);
                 const float3 nv = saturate(dot(n, v));
-                const float limPower = 1.0 - nv;
+                const float rimPower = 1.0 - nv;
 
                 // 絞りも入れた最終的な反射光
-                const float3 limColor = _LimColor * pow(limPower, _LimPower);
+                const float3 rimColor = _RimColor * pow(rimPower, _RimPower);
 
                 // 環境光も足す
                 const half3 ambient = ShadeSH9(half4(i.normal, 1));
-                const float3 finalLight = ambient + limColor;
+                const float3 finalLight = ambient + rimColor;
 
                 // 最終的なカラーに乗算
                 fixed4 col = tex2D(_MainTex, i.uv);
